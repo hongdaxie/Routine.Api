@@ -198,6 +198,7 @@ namespace Routine.Api.Services
 
         public void UpdateCompany(Company company)
         {
+            //  属性会被跟踪更新
             // _context.Entry(company).State = EntityState.Modified;
         }
 

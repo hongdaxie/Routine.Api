@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Serialization;
 
 namespace Routine.Api
 {
@@ -33,7 +34,33 @@ namespace Routine.Api
             services.AddControllers(setup =>
             {
                 setup.ReturnHttpNotAcceptable = true;
-            }).AddXmlDataContractSerializerFormatters();
+            }).AddNewtonsoftJson(setup =>
+                {
+                    setup.SerializerSettings.ContractResolver
+                        = new CamelCasePropertyNamesContractResolver();
+                })
+                .AddXmlDataContractSerializerFormatters()
+                .ConfigureApiBehaviorOptions(setup =>
+                {
+                    setup.InvalidModelStateResponseFactory = context =>
+                    {
+                        var problemDetails = new ValidationProblemDetails(context.ModelState)
+                        {
+                            Type = "https://www.google.com/",
+                            Title = "Error",
+                            Status = StatusCodes.Status422UnprocessableEntity,
+                            Detail = "please see detail info",
+                            Instance = context.HttpContext.Request.Path
+                        };
+
+                        problemDetails.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+
+                        return new UnprocessableEntityObjectResult(problemDetails)
+                        {
+                            ContentTypes = {"application/problem+json"}
+                        };
+                    };
+                });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

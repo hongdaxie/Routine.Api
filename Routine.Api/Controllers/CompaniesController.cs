@@ -58,5 +58,12 @@ namespace Routine.Api.Controllers
 
             return CreatedAtRoute(nameof(GetCompany), new { companyId = returnDto.Id }, returnDto);
         }
+
+        [HttpOptions]
+        public IActionResult GetCompaniesOptions()
+        {
+            Response.Headers.Add("Allow", "GET,POST,OPTIONS");
+            return Ok();
+        }
     }
 }

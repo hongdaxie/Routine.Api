@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using Routine.Api.Entities;
 using Routine.Api.ValidationAttributes;
 
 namespace Routine.Api.Models
 {
-    public class EmployeeAddDto: IValidatableObject
+    public class EmployeeUpdateDto
     {
-        [EmployeeNoMustDifferentFromFirstName(ErrorMessage = "employee no cannot be equal to firstname")]
-
         [Display(Name = "employee id")]
         [Required(ErrorMessage = "{0} is required")]
         public string EmployeeNo { get; set; }
@@ -29,8 +29,8 @@ namespace Routine.Api.Models
         {
             if (FirstName == LastName)
             {
-                yield return new ValidationResult("First name and last name cannot be same.", 
-                    new []{ nameof(FirstName), nameof(LastName) });
+                yield return new ValidationResult("First name and last name cannot be same.",
+                    new[] { nameof(FirstName), nameof(LastName) });
             }
         }
     }
