@@ -29,8 +29,7 @@ namespace Routine.Api.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> 
-            GetEmployeesFromCompany(Guid companyId, [FromQuery(Name = "gender")]string genderDisplay,
-                string q)
+            GetEmployeesFromCompany(Guid companyId, EmployeeDtoParameters parameters)
         {
             if (! await _companyRepository.CompanyExistsAsync(companyId))
             {
@@ -38,7 +37,7 @@ namespace Routine.Api.Controllers
             }
 
             var employees = await _companyRepository
-                .GetEmployeesAsync(companyId, genderDisplay, q);
+                .GetEmployeesAsync(companyId, parameters);
 
             var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 

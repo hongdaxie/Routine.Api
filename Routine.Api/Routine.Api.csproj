@@ -5,20 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\**" />
-    <Content Remove="Migrations\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <None Remove="Migrations\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="routine.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Migrations\20210119132547_initialData.cs" />
-    <Compile Include="Migrations\20210119132547_initialData.Designer.cs" />
-    <Compile Include="Migrations\RoutineDbContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

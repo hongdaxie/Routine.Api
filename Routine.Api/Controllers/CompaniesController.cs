@@ -19,12 +19,14 @@ namespace Routine.Api.Controllers
     {
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public CompaniesController(ICompanyRepository companyRepository, IMapper mapper)
+        public CompaniesController(ICompanyRepository companyRepository, IMapper mapper, IPropertyMappingService propertyMappingService)
         {
             _companyRepository = companyRepository ??
                 throw new ArgumentNullException(nameof(companyRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
         }
 
         [HttpGet(Name = nameof(GetCompanies))]
@@ -32,6 +34,10 @@ namespace Routine.Api.Controllers
         public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompanies(
            [FromQuery] CompanyDtoParameters parameters)
         {
+            if (!_propertyMappingService.ValidMappingExistsFor<CompanyDto, Company>(parameters.OrderBy))
+            {
+                return BadRequest();
+            }
             var companies = await _companyRepository.GetCompaniesAsync(parameters);
 
             var previousPageLink = companies.HasPrevious
@@ -95,7 +101,7 @@ namespace Routine.Api.Controllers
                 return NotFound();
             }
 
-            await _companyRepository.GetEmployeesAsync(companyId, null, null);
+            await _companyRepository.GetEmployeesAsync(companyId, null);
 
             _companyRepository.DeleteCompany(companyEntity);
             await _companyRepository.SaveAsync();
@@ -118,6 +124,7 @@ namespace Routine.Api.Controllers
                 case ResourceUriType.PreviousPage:
                     return Url.Link(nameof(GetCompanies), new
                     {
+                        orderBy = parameters.OrderBy,
                         pageNumber = parameters.PageNumber - 1,
                         pageSize = parameters.PageSize,
                         companyName = parameters.CompanyName,
@@ -126,6 +133,7 @@ namespace Routine.Api.Controllers
                 case ResourceUriType.NextPage:
                     return Url.Link(nameof(GetCompanies), new
                     {
+                        orderBy = parameters.OrderBy,
                         pageNumber = parameters.PageNumber + 1,
                         pageSize = parameters.PageSize,
                         companyName = parameters.CompanyName,
@@ -134,6 +142,7 @@ namespace Routine.Api.Controllers
                 default:
                     return Url.Link(nameof(GetCompanies), new
                     {
+                        orderBy = parameters.OrderBy,
                         pageNumber = parameters.PageNumber,
                         pageSize = parameters.PageSize,
                         companyName = parameters.CompanyName,
